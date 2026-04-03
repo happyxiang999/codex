@@ -6,48 +6,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/version-v1.1.2-2563eb.svg)](https://github.com/dou-jiang/codex-console/releases/tag/v1.1.2)
+[![Version](https://img.shields.io/badge/version-v1.1.2-2563eb.svg)](https://github.com/happyxiang999/codex/releases/tag/v1.1.2)
 
 ## 项目地址
 
-- GitHub Repo: [https://github.com/dou-jiang/codex-console](https://github.com/dou-jiang/codex-console)
-- Blog: [https://blog.cysq8.cn/](https://blog.cysq8.cn/)
-
-## QQ群
-
-- 交流群: [291638849（点击加群）](https://qm.qq.com/q/4TETC3mWco)
-- Telegram 频道: [codex_console](https://t.me/codex_console)
-
-## Blog 说明
-
-我会在 Blog 持续更新这些内容：
-
-- 部署教程和环境配置说明
-- 每个版本的更新日志和 Release 说明
-- 常见报错、排查思路和修复记录
-- 邮箱服务、上传服务、任务调度、自检功能等使用说明
-- 上游变化后的兼容性调整说明
-
-访问地址：
-
-- [https://blog.cysq8.cn/](https://blog.cysq8.cn/)
-
-## 赞助支持
-
-如果这个项目对你有帮助，欢迎赞助支持项目继续维护与更新。
-
-<table>
-  <tr>
-    <td align="center">
-      <strong>微信赞助</strong><br />
-      <img src="docs/assets/wechat-pay.png" alt="微信赞助二维码" width="260" />
-    </td>
-    <td align="center">
-      <strong>支付宝赞助</strong><br />
-      <img src="docs/assets/alipay-pay.png" alt="支付宝赞助二维码" width="260" />
-    </td>
-  </tr>
-</table>
+- GitHub Repo: [https://github.com/happyxiang999/codex](https://github.com/happyxiang999/codex)
 
 ## 致谢
 
