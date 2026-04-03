@@ -2483,6 +2483,7 @@ def _build_inbox_config(db, service_type, email: str) -> dict:
         EST.IMAP_MAIL: "imap_mail",
         EST.OUTLOOK: "outlook",
         EST.LUCKMAIL: "luckmail",
+        EST.CLOUDMAIL: "cloudmail",
     }
     db_type = type_map.get(service_type)
     if not db_type:
