@@ -123,3 +123,103 @@ def test_run_quick_refresh_workflow_combines_validate_and_subscription(monkeypat
     assert result["validate"]["valid_count"] == 2
     assert result["subscription"]["total"] == 2
     assert result["subscription"]["success_count"] == 2
+
+
+def test_batch_validate_tokens_async_registers_task_and_submits_worker(monkeypatch):
+    register_calls = []
+    submit_calls = []
+
+    def fake_register_domain_task(**kwargs):
+        register_calls.append(kwargs)
+        return {
+            "id": kwargs["task_id"],
+            "domain": kwargs["domain"],
+            "task_type": kwargs["task_type"],
+            "status": "pending",
+            "paused": False,
+            "progress": kwargs["progress"],
+        }
+
+    def fake_submit(fn, task_id, request):
+        submit_calls.append((fn, task_id, request))
+        return SimpleNamespace()
+
+    monkeypatch.setattr(accounts_routes, "_resolve_batch_validate_account_ids", lambda request: [101, 202, 303])
+    monkeypatch.setattr(accounts_routes.task_manager, "register_domain_task", fake_register_domain_task)
+    monkeypatch.setattr(accounts_routes.task_manager, "executor", SimpleNamespace(submit=fake_submit))
+
+    request = accounts_routes.BatchValidateRequest(ids=[101, 202, 303], select_all=False)
+    result = asyncio.run(accounts_routes.batch_validate_tokens_async(request))
+
+    assert result["domain"] == "accounts"
+    assert result["task_type"] == accounts_routes.ACCOUNT_ASYNC_TASK_VALIDATE
+    assert result["progress"] == {"completed": 0, "total": 3}
+    assert len(register_calls) == 1
+    assert len(submit_calls) == 1
+    assert submit_calls[0][1] == result["id"]
+    assert submit_calls[0][2] == request
+
+
+def test_get_account_async_task_returns_snapshot(monkeypatch):
+    snapshot = {
+        "id": "accounts-batch_validate-demo",
+        "domain": "accounts",
+        "task_type": accounts_routes.ACCOUNT_ASYNC_TASK_VALIDATE,
+        "status": "running",
+        "progress": {"completed": 1, "total": 2},
+    }
+    monkeypatch.setattr(accounts_routes.task_manager, "get_domain_task", lambda domain, task_id: snapshot)
+
+    result = asyncio.run(accounts_routes.get_account_async_task("accounts-batch_validate-demo"))
+
+    assert result == snapshot
+
+
+def test_batch_check_subscription_async_registers_task_and_submits_worker(monkeypatch):
+    register_calls = []
+    submit_calls = []
+
+    def fake_register_domain_task(**kwargs):
+        register_calls.append(kwargs)
+        return {
+            "id": kwargs["task_id"],
+            "domain": kwargs["domain"],
+            "task_type": kwargs["task_type"],
+            "status": "pending",
+            "paused": False,
+            "progress": kwargs["progress"],
+        }
+
+    def fake_submit(fn, task_id, request):
+        submit_calls.append((fn, task_id, request))
+        return SimpleNamespace()
+
+    monkeypatch.setattr(payment_routes, "_resolve_batch_subscription_account_ids", lambda request: [1, 2])
+    monkeypatch.setattr(payment_routes.task_manager, "register_domain_task", fake_register_domain_task)
+    monkeypatch.setattr(payment_routes.task_manager, "executor", SimpleNamespace(submit=fake_submit))
+
+    request = payment_routes.BatchCheckSubscriptionRequest(ids=[1, 2], select_all=False)
+    result = payment_routes.batch_check_subscription_async(request)
+
+    assert result["domain"] == "payment"
+    assert result["task_type"] == payment_routes.PAYMENT_OP_TASK_SUBSCRIPTION
+    assert result["progress"] == {"completed": 0, "total": 2}
+    assert len(register_calls) == 1
+    assert len(submit_calls) == 1
+    assert submit_calls[0][1] == result["id"]
+    assert submit_calls[0][2] == request
+
+
+def test_get_payment_op_task_returns_snapshot(monkeypatch):
+    snapshot = {
+        "id": "payment-batch_check_subscription-demo",
+        "domain": "payment",
+        "task_type": payment_routes.PAYMENT_OP_TASK_SUBSCRIPTION,
+        "status": "running",
+        "progress": {"completed": 1, "total": 3},
+    }
+    monkeypatch.setattr(payment_routes.task_manager, "get_domain_task", lambda domain, task_id: snapshot)
+
+    result = payment_routes.get_payment_op_task("payment-batch_check_subscription-demo")
+
+    assert result == snapshot
